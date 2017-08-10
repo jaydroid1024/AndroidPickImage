@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AndroidPickImage</string>
+    <string name="bmob_application_id">fdddf617b4b921349b939dcc2e6dc2fc</string>
+
 </resources>

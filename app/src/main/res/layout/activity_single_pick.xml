@@ -13,6 +13,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="10dp">
+
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,21 +29,58 @@
                 android:layout_marginTop="10dp"
                 android:orientation="vertical">
 
-                <de.hdodenhof.circleimageview.CircleImageView
+                <FrameLayout
+                    android:layout_gravity="center_horizontal"
                     android:layout_width="160dp"
-                    android:layout_height="160dp"
-                    android:layout_centerInParent="true"
-                    android:layout_gravity="center"
-                    android:clickable="true"
-                    android:onClick="onPhotoClick"
-                    android:src="@mipmap/img_circle_image"/>
-
-                <TextView
+                    android:layout_height="160dp">
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/iv_avatar"
+                        android:layout_width="160dp"
+                        android:layout_height="160dp"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/img_circle_image"
+                        android:layout_gravity="center"/>
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="160dp"
+                        android:layout_height="160dp"
+                        android:background="@drawable/selector_avatar_bg"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:clickable="true"
+                        android:onClick="onPhotoClick"/>
+                    <ProgressBar
+                        android:id="@+id/pb_progress"
+                        android:alpha="0.5"
+                        android:padding="20dp"
+                        android:visibility="gone"
+                        android:layout_gravity="center"
+                        android:indeterminate="false"
+                        android:indeterminateTint="@color/colorPrimary"
+                        android:indeterminateTintMode="src_in"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                </FrameLayout>
+                <CheckBox
+                    android:id="@+id/checkbox"
                     style="@style/TitleStyle"
-                    android:text="Jay.Wong"/>
+                    android:text="Crop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
+        <TextView
+            android:id="@+id/tv_image_size"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/image"
+            android:layout_marginTop="20dp"
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </LinearLayout>
 
 </RelativeLayout>
