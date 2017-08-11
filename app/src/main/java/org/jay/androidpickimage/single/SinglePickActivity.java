@@ -22,16 +22,21 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.jay.androidpickimage.R;
+import org.jay.androidpickimage.helper.FileSizeHelper;
 import org.jay.androidpickimage.helper.PermissionHelper;
 import org.jay.androidpickimage.helper.PickImageHelper;
+import org.jay.androidpickimage.module.ImageModule;
 
 import java.io.File;
 import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.QueryListener;
+import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -42,16 +47,6 @@ public class SinglePickActivity extends AppCompatActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-    //请求相机
-    private static final int REQUEST_CAPTURE = 100;
-    //请求相册
-    private static final int REQUEST_GALLERY = 101;
-    //请求截图
-    private static final int REQUEST_CROP_PHOTO = 102;
-    //请求访问外部存储
-    private static final int READ_EXTERNAL_STORAGE_REQUEST_CODE = 103;
-    //请求写入外部存储
-    private static final int WRITE_EXTERNAL_STORAGE_REQUEST_CODE = 104;
     @BindView(R.id.iv_avatar)
     CircleImageView mIvAvatar;
     @BindView(R.id.pb_progress)
@@ -76,13 +71,41 @@ public class SinglePickActivity extends AppCompatActivity {
                 mIsNeedCrop = isChecked;
             }
         });
+        getAvatar();
+    }
+
+    private void getAvatar() {
+        mPbProgress.setVisibility(View.VISIBLE);
+        BmobQuery<ImageModule> bmobQuery=new BmobQuery<>();
+        bmobQuery.getObject(getString(R.string.avatar_id), new QueryListener<ImageModule>() {
+            @Override
+            public void done(ImageModule imageModule, BmobException e) {
+                if(e==null){
+                    Picasso.with(SinglePickActivity.this).load(imageModule.getUrl()).into(mIvAvatar, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(SinglePickActivity.this, "load success", Toast.LENGTH_SHORT).show();
+                            mPbProgress.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError() {
+                            Toast.makeText(SinglePickActivity.this, "load failure", Toast.LENGTH_SHORT).show();
+                            mPbProgress.setVisibility(View.GONE);
+                        }
+                    });
+                }else{
+
+                }
+            }
+        });
     }
 
     public void onPhotoClick(View view) {
         CropImage.startPickImageActivity(this);
     }
 
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -117,9 +140,10 @@ public class SinglePickActivity extends AppCompatActivity {
         try {
             bitmap = PickImageHelper.getImageSampleOutput(this, resultUri);
             Bitmap thumbNail = Bitmap.createScaledBitmap(bitmap, 600, 800, false);
-            mTvImageSize.setText("大小："+thumbNail.getByteCount()/1024/1024);
             String fileName = PickImageHelper.GenerateNameWithUUID();
             File file = PickImageHelper.createFileFromBitmap(this, fileName, thumbNail);
+            double size=FileSizeHelper.getFileOrFilesSize(file,FileSizeHelper.SIZETYPE_KB);
+            mTvImageSize.setText("size(KB):"+size);
             uploadProfileImage(file, fileName);
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -133,37 +157,60 @@ public class SinglePickActivity extends AppCompatActivity {
     private void uploadProfileImage(final File file, final String fileName) {
         mPbProgress.setVisibility(View.VISIBLE);
         mBmobFile = new BmobFile(file);
-        mBmobFile.uploadblock(new UploadFileListener() {
-            @Override
-            public void done(BmobException e) {
-                if (e == null) {
-                    Picasso.with(SinglePickActivity.this).load(mBmobFile.getUrl()).into(mImage);
-                    Log.d("jay", "done: [e]=" + mBmobFile.getUrl());
-                    Picasso.with(SinglePickActivity.this).load(mBmobFile.getUrl()).into(mIvAvatar, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            Toast.makeText(getApplicationContext(), "load success", Toast.LENGTH_SHORT).show();
-                            mPbProgress.setVisibility(View.GONE);
-                        }
+        try{
+            mBmobFile.uploadblock(new UploadFileListener() {
+                @Override
+                public void done(BmobException e) {
+                    if (e == null) {
+                        final ImageModule imageModule=new ImageModule();
+                        imageModule.setUrl(mBmobFile.getUrl());
+                        imageModule.update(getString(R.string.avatar_id), new UpdateListener() {
+                            @Override
+                            public void done(BmobException e) {
+                                if(e==null){
+                                    Picasso.with(SinglePickActivity.this).load(mBmobFile.getUrl()).into(mImage);
+                                    Log.d("jay", "done: [e]=" + mBmobFile.getUrl());
+                                    Picasso.with(SinglePickActivity.this).load(mBmobFile.getUrl()).into(mIvAvatar, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            Toast.makeText(getApplicationContext(), "load success", Toast.LENGTH_SHORT).show();
+                                            mPbProgress.setVisibility(View.GONE);
+                                        }
 
-                        @Override
-                        public void onError() {
-                            mPbProgress.setVisibility(View.GONE);
-                            Toast.makeText(getApplicationContext(), "error load image", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    mPbProgress.setVisibility(View.GONE);
-                    Toast.makeText(SinglePickActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        @Override
+                                        public void onError() {
+                                            mPbProgress.setVisibility(View.GONE);
+                                            Toast.makeText(getApplicationContext(), "error load image", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }else{
+                                    Toast.makeText(getApplicationContext(), "error load image", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+//                    imageModule.save(new SaveListener<String>() {
+//                        @Override
+//                        public void done(String id, BmobException e) {
+//                            Log.d("jay", "done: [id, e]="+id);
+//                        }
+//                    });
+                    } else {
+                        mPbProgress.setVisibility(View.GONE);
+                        Toast.makeText(SinglePickActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
 
-            @Override
-            public void onProgress(Integer value) {
-                // 返回的上传进度（百分比）
-                Log.d("jay", "onProgress: [value]=" + value);
-            }
-        });
+                @Override
+                public void onProgress(Integer value) {
+                    // 返回的上传进度（百分比）
+                    Log.d("jay", "onProgress: [value]=" + value);
+                }
+            });
+
+        }catch (Exception e){
+
+        }
     }
 
     //1
