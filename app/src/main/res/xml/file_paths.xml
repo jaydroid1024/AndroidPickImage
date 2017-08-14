@@ -8,9 +8,9 @@
         <!--name="external_files"-->
         <!--path="."/>-->
 
-    <root-path
-        path=""
-        name="camera_photos" />
+    <!--<root-path-->
+        <!--path=""-->
+        <!--name="camera_photos" />-->
 
     <external-path name="external_files" path="."/>
 </paths>

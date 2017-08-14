@@ -25,15 +25,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!--适配 android 7.0 文件操作-->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="org.jay.androidpickimage"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"/>
         </provider>
+        <meta-data
+            android:name="APP_ID"
+            android:value="${applicationId}" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -46,6 +51,7 @@
         <activity android:name=".multi.MultiPickActivity">
         </activity>
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"/>
+        <activity android:name=".multi.multiimageselector.ImgSelActivity"/>
     </application>
 
 </manifest>
