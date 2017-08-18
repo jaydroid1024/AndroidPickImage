@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_default_image" />
+        android:src="@drawable/ic_img_default_image" />
 
     <ImageView
         android:id="@+id/ivPhotoCheaked"
@@ -21,6 +21,6 @@
         android:contentDescription="@null"
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"
-        android:src="@drawable/ic_uncheck" />
+        android:src="@drawable/ic_img_uncheck" />
 
 </RelativeLayout>

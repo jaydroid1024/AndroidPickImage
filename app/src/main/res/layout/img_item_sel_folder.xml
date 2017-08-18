@@ -19,7 +19,7 @@
             android:layout_height="55dp"
             android:contentDescription="@null"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_default_image" />
+            android:src="@drawable/ic_img_default_image" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_folder_selected" />
+                android:src="@drawable/ic_img_folder_selected" />
 
         </LinearLayout>
 

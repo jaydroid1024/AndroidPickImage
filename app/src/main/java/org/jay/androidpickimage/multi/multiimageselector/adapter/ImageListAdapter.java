@@ -39,7 +39,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.context = context;
         this.config = config;
         mList=list;
-//        super(context, list, R.layout.item_img_sel, R.layout.item_img_sel_take_photo);
+//        super(context, list, R.layout.img_item_sel, R.layout.img_item_sel_take_photo);
 
     }
 
@@ -47,7 +47,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         if (position == 0 && showCamera) {
             CameraViewHolder holder = (CameraViewHolder) viewHolder;
-            holder.mIvTakePhoto.setImageResource(R.drawable.ic_take_photo);
+            holder.mIvTakePhoto.setImageResource(R.drawable.ic_img_take_photo);
             holder.mIvTakePhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -67,9 +67,9 @@ public class ImageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         int ret = listener.onCheckedClick(position, item);
                         if (ret == 1) { // 局部刷新
                             if (Constant.imageList.contains(item.path)) {
-                                holder.mIvPhotoCheaked.setImageResource(R.drawable.ic_checked);
+                                holder.mIvPhotoCheaked.setImageResource(R.drawable.ic_img_checked);
                             } else {
-                                holder.mIvPhotoCheaked.setImageResource(R.drawable.ic_uncheck);
+                                holder.mIvPhotoCheaked.setImageResource(R.drawable.ic_img_uncheck);
                             }
                         }
                     }
@@ -90,9 +90,9 @@ public class ImageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (multiSelect) {
             holder.mIvPhotoCheaked.setVisibility(View.VISIBLE);
             if (Constant.imageList.contains(item.path)) {
-                holder.mIvPhotoCheaked.setImageResource(R.drawable.ic_checked);
+                holder.mIvPhotoCheaked.setImageResource(R.drawable.ic_img_checked);
             } else {
-                holder.mIvPhotoCheaked.setImageResource(R.drawable.ic_uncheck);
+                holder.mIvPhotoCheaked.setImageResource(R.drawable.ic_img_uncheck);
             }
         } else {
             holder.mIvPhotoCheaked.setVisibility(View.GONE);
@@ -123,9 +123,9 @@ public class ImageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == 0) {
-            return new ImageViewHolder(LayoutInflater.from(context).inflate(R.layout.item_img_sel, null));
+            return new ImageViewHolder(LayoutInflater.from(context).inflate(R.layout.img_item_sel, null));
         } else {
-            return new CameraViewHolder(LayoutInflater.from(context).inflate(R.layout.item_img_sel_take_photo, null));
+            return new CameraViewHolder(LayoutInflater.from(context).inflate(R.layout.img_item_sel_take_photo, null));
         }
     }
 

@@ -27,7 +27,7 @@
         <View
             android:clickable="true"
             android:onClick="OnSingleSelect"
-            android:background="@drawable/selector_bg"
+            android:background="@drawable/selector_shadow_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
@@ -52,7 +52,7 @@
         <View
             android:clickable="true"
             android:onClick="OnMultiSelect"
-            android:background="@drawable/selector_bg"
+            android:background="@drawable/selector_shadow_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

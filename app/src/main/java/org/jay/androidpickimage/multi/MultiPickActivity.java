@@ -101,4 +101,8 @@ public class MultiPickActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void onAnother(View view) {
+        startActivity(new Intent(this,AnotherActivity.class));
+    }
 }

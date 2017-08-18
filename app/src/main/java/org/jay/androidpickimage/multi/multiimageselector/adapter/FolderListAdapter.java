@@ -120,7 +120,7 @@ public class FolderListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_img_sel_folder, null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.img_item_sel_folder, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {

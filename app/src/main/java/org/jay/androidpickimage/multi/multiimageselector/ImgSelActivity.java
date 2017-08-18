@@ -72,7 +72,7 @@ public class ImgSelActivity extends FragmentActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_img_sel);
+        setContentView(R.layout.img_activity_sel);
         config = Constant.config;
 
         // Android 6.0 checkSelfPermission

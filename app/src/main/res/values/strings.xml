@@ -3,7 +3,7 @@
     <string name="bmob_application_id">fdddf617b4b921349b939dcc2e6dc2fc</string>
     <string name="avatar_id">53e657158f</string>
 
-<!--multi image selector-->
+    <!--multi image selector 1-->
     <string name="minnum">最少选择一张图片</string>
     <string name="maxnum">最多选择%1$d张图片</string>
     <string name="all_images">所有图片</string>
@@ -18,5 +18,34 @@
     <string name="all_image">所有图片</string>
     <string name="total">共</string>
     <string name="piece">张</string>
+
+    <!--multi image selector 2-->
+    <string name="mis_folder_all">All Images</string>
+    <string name="mis_preview">Preview</string>
+    <string name="mis_msg_no_camera">No system camera found</string>
+    <string name="mis_msg_amount_limit">Select images amount is limit</string>
+    <string name="mis_action_done">Done</string>
+    <string name="mis_action_button_string">%1$s(%2$d/%3$d)</string>
+    <string name="mis_photo_unit">Shot</string>
+    <string name="mis_tip_take_photo">Take photo</string>
+    <string name="mis_error_image_not_exist">Image error</string>
+    <string name="mis_error_no_permission">Has no permission</string>
+    <string name="mis_permission_dialog_title">Permission Deny</string>
+    <string name="mis_permission_dialog_ok">OK</string>
+    <string name="mis_permission_dialog_cancel">CANCEL</string>
+    <string name="mis_permission_rationale">Storage read permission is needed to pick files.</string>
+    <string name="mis_permission_rationale_write_storage">Storage write permission is needed to save the image.</string>
+
+
+    <string name="action_settings">Settings</string>
+    <string name="select_mode">Select Mode</string>
+    <string name="mode_single">Single-Choice</string>
+    <string name="mode_multi">Multi-Choice</string>
+    <string name="max_select_amount">Max Selected Amount</string>
+    <string name="hint_default_amount">default amount is 9</string>
+    <string name="enable_camera">Enable Camera</string>
+    <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
+    <string name="go_select">Select</string>
 
 </resources>

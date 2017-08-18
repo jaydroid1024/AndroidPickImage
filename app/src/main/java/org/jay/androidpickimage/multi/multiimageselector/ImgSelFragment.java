@@ -87,7 +87,7 @@ public class ImgSelFragment extends Fragment implements View.OnClickListener, Vi
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_img_sel, container, false);
+        View view = inflater.inflate(R.layout.img_fragment_sel, container, false);
         rvImageList = (RecyclerView) view.findViewById(R.id.rvImageList);
         btnAlbumSelected = (Button) view.findViewById(R.id.btnAlbumSelected);
         btnAlbumSelected.setOnClickListener(this);

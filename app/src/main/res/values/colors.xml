@@ -4,5 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <!--img-->
     <color name="bottom_bg">#aaaaaa</color>
+
+    <!---->
 </resources>
