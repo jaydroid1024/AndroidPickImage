@@ -48,4 +48,9 @@
     <string name="disable">Disable</string>
     <string name="go_select">Select</string>
 
+
+    <string name="glide_plus_icon_string">android.resource://</string>
+    <string name="post_delete_tv_d">拖动到此处，进行删除</string>
+    <string name="post_delete_tv_s"> 放开手指，进行删除</string>
+
 </resources>

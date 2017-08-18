@@ -80,6 +80,7 @@ public class AnotherActivity extends AppCompatActivity {
                     sb.append("\n");
                 }
                 mResult.setText(sb.toString());
+                PostImagesActivity.startPostActivity(AnotherActivity.this,mSelectPath);
             }
         }
     }

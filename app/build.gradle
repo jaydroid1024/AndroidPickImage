@@ -38,4 +38,6 @@ dependencies {
     compile 'cn.bmob.android:bmob-sdk:3.5.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     testCompile 'junit:junit:4.12'
+
+    compile 'com.kuyue:utils:1.0.8'
 }
