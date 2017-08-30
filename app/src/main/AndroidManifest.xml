@@ -59,7 +59,7 @@
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".multi.AnotherActivity">
         </activity>
-        <activity android:name=".multi.PostImagesActivity"/>
+        <activity android:name=".multi.postimage.PostImagesActivity"/>
     </application>
 
 </manifest>

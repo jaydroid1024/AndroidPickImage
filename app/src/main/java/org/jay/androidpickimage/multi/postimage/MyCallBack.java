@@ -1,4 +1,4 @@
-package org.jay.androidpickimage.multi;
+package org.jay.androidpickimage.multi.postimage;
 
 import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;

@@ -1,6 +1,7 @@
 package org.jay.androidpickimage.multi.multi_image_selector.utils;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -124,6 +125,19 @@ public class FileUtils {
     private static boolean hasExternalStoragePermission(Context context) {
         int perm = context.checkCallingOrSelfPermission(EXTERNAL_STORAGE_PERMISSION);
         return perm == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static String getApplicationId(Context appContext) throws IllegalArgumentException {
+        ApplicationInfo applicationInfo = null;
+        try {
+            applicationInfo = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
+            if (applicationInfo == null) {
+                throw new IllegalArgumentException(" get application info = null, has no meta data! ");
+            }
+            return applicationInfo.metaData.getString("APP_ID");
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new IllegalArgumentException(" get application info error! ", e);
+        }
     }
 
 }

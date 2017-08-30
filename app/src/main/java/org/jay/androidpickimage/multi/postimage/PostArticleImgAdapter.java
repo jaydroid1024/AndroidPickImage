@@ -1,4 +1,4 @@
-package org.jay.androidpickimage.multi;
+package org.jay.androidpickimage.multi.postimage;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

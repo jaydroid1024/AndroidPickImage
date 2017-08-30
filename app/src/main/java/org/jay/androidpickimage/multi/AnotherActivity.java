@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import org.jay.androidpickimage.R;
 import org.jay.androidpickimage.multi.multi_image_selector.MultiImageSelector;
+import org.jay.androidpickimage.multi.postimage.PostImagesActivity;
 
 import java.util.ArrayList;
 

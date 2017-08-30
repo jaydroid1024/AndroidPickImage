@@ -1,4 +1,4 @@
-package org.jay.androidpickimage.multi;
+package org.jay.androidpickimage.multi.postimage;
 
 import android.app.Activity;
 import android.content.Context;
