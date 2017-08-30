@@ -1,9 +1,12 @@
 package org.jay.androidpickimage.helper;
 
+import android.content.ContentUris;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,6 +24,22 @@ import java.util.UUID;
  */
 
 public class PickImageHelper {
+    public static Uri getMediaUriFromPath(Context context, String path) {
+        Uri mediaUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = context.getContentResolver().query(mediaUri,
+                null,
+                MediaStore.Images.Media.DISPLAY_NAME + "= ?",
+                new String[] {path.substring(path.lastIndexOf("/") + 1)},
+                null);
+
+        Uri uri = null;
+        if(cursor.moveToFirst()) {
+            uri = ContentUris.withAppendedId(mediaUri,
+                    cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media._ID)));
+        }
+        cursor.close();
+        return uri;
+    }
 
     public static Bitmap getImageSampleOutput(Context context, Uri selectedImage) throws IOException, OutOfMemoryError {
         int MAX_HEIGHT = 600;

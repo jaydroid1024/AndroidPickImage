@@ -3,7 +3,10 @@ package org.jay.androidpickimage.multi.postimage;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,32 +16,22 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.TextView;
-
-import com.hys.utils.AppUtils;
-import com.hys.utils.DensityUtils;
-import com.hys.utils.ImageUtils;
-import com.hys.utils.InitCacheFileUtils;
-import com.hys.utils.SdcardUtils;
-import com.hys.utils.ToastUtils;
+import android.widget.Toast;
 
 import org.jay.androidpickimage.R;
 import org.jay.androidpickimage.application.MyApplication;
+import org.jay.androidpickimage.helper.PickImageHelper;
 import org.jay.androidpickimage.multi.multi_image_selector.MultiImageSelector;
 import org.jay.androidpickimage.multi.multi_image_selector.MultiImageSelectorActivity;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-/**
- * 图片拖拽 Activity
- * Created by kuyue on 2017/7/13 上午10:21.
- * 邮箱:595327086@qq.com
- **/
 public class PostImagesActivity extends AppCompatActivity {
 
-    public static final String FILE_DIR_NAME = "com.kuyue.wechatpublishimagesdrag";//应用缓存地址
-    public static final String FILE_IMG_NAME = "images";//放置图片缓存
-    public static final int IMAGE_SIZE = 9;//可添加图片最大数
+    public static final int IMAGE_SIZE = 9;
     private static final int REQUEST_IMAGE = 1002;
 
     private ArrayList<String> originImages;//原始图片
@@ -49,11 +42,6 @@ public class PostImagesActivity extends AppCompatActivity {
     private RecyclerView rcvImg;
     private TextView tv;//删除区域提示
 
-    public static void startPostActivity(Context context, ArrayList<String> images) {
-        Intent intent = new Intent(context, PostImagesActivity.class);
-        intent.putStringArrayListExtra("img", images);
-        context.startActivity(intent);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,14 +53,24 @@ public class PostImagesActivity extends AppCompatActivity {
 
     private void initData() {
         originImages = getIntent().getStringArrayListExtra("img");
+        if (originImages == null) {
+            originImages=new ArrayList<>();
+        }
         mContext = getApplicationContext();
-        InitCacheFileUtils.initImgDir(FILE_DIR_NAME, FILE_IMG_NAME);//清除图片缓存
         //添加按钮图片资源
-        String plusPath = getString(R.string.glide_plus_icon_string) + AppUtils.getPackageInfo(mContext).packageName + "/mipmap/" + R.mipmap.mine_btn_plus;
+        String plusPath = getString(R.string.glide_plus_icon_string) +getPackageInfo(mContext).packageName + "/mipmap/" + R.mipmap.mine_btn_plus;
         dragImages = new ArrayList<>();
         originImages.add(plusPath);//添加按键，超过9张时在adapter中隐藏
         dragImages.addAll(originImages);
-        new Thread(new MyRunnable(dragImages, originImages, dragImages, myHandler, false)).start();//开启线程，在新线程中去压缩图片
+        new Thread(new MyRunnable(this,dragImages, originImages, dragImages, myHandler, false)).start();//开启线程，在新线程中去压缩图片
+    }
+    public static PackageInfo getPackageInfo(Context context) {
+        PackageManager pm = context.getPackageManager();
+        try {
+            return pm.getPackageInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+        return new PackageInfo();
     }
 
     private void initView() {
@@ -102,7 +100,7 @@ public class PostImagesActivity extends AppCompatActivity {
                             .multi()
                             .start(PostImagesActivity.this, REQUEST_IMAGE);
                 } else {
-                    ToastUtils.getInstance().show(MyApplication.getInstance().getContext(), "预览图片");
+                    Toast.makeText(mContext, "Review", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -145,7 +143,7 @@ public class PostImagesActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE && resultCode == RESULT_OK) {//从相册选择完图片
             //压缩图片
-            new Thread(new MyRunnable(data.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT),
+            new Thread(new MyRunnable(PostImagesActivity.this,data.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT),
                     originImages, dragImages, myHandler, true)).start();
         }
     }
@@ -160,41 +158,57 @@ public class PostImagesActivity extends AppCompatActivity {
         ArrayList<String> dragImages;
         Handler handler;
         boolean add;//是否为添加图片
+        private final Context mContext;
 
-        public MyRunnable(ArrayList<String> images, ArrayList<String> originImages, ArrayList<String> dragImages, Handler handler, boolean add) {
+        public MyRunnable(Context context,ArrayList<String> images, ArrayList<String> originImages, ArrayList<String> dragImages, Handler handler, boolean add) {
             this.images = images;
             this.originImages = originImages;
             this.dragImages = dragImages;
             this.handler = handler;
             this.add = add;
+            mContext = context;
         }
 
         @Override
         public void run() {
-            SdcardUtils sdcardUtils = new SdcardUtils();
-            String filePath;
-            Bitmap newBitmap;
             int addIndex = originImages.size() - 1;
             for (int i = 0; i < images.size(); i++) {
                 if (images.get(i).contains(MyApplication.getInstance().getString(R.string.glide_plus_icon_string))) {//说明是添加图片按钮
                     continue;
                 }
-                //压缩
-                newBitmap = ImageUtils.compressScaleByWH(images.get(i),
-                        DensityUtils.dp2px(MyApplication.getInstance().getContext(), 100),
-                        DensityUtils.dp2px(MyApplication.getInstance().getContext(), 100));
-                //文件地址
-                filePath = sdcardUtils.getSDPATH() + FILE_DIR_NAME + "/"
-                        + FILE_IMG_NAME + "/" + String.format("img_%d.jpg", System.currentTimeMillis());
-                //保存图片
-                ImageUtils.save(newBitmap, filePath, Bitmap.CompressFormat.JPEG, true);
-                //设置值
-                if (!add) {
-                    images.set(i, filePath);
-                } else {//添加图片，要更新
-                    dragImages.add(addIndex, filePath);
-                    originImages.add(addIndex++, filePath);
+                Bitmap bitmap;
+                try {
+                    bitmap = PickImageHelper.getImageSampleOutput(mContext, Uri.fromFile(new File(images.get(i))));
+                    Bitmap thumbNail = Bitmap.createScaledBitmap(bitmap, 200, 200, false);
+                    String fileName = PickImageHelper.GenerateNameWithUUID();
+                    File file = PickImageHelper.createFileFromBitmap(mContext, fileName, thumbNail);
+                    if (!add) {
+                        images.set(i, file.getPath());
+                    } else {//添加图片，要更新
+                        dragImages.add(addIndex, file.getPath());
+                        originImages.add(addIndex++, file.getPath());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (OutOfMemoryError ome) {
+                    ome.printStackTrace();
                 }
+//                //压缩
+//                newBitmap = ImageUtils.compressScaleByWH(images.get(i),
+//                        DensityUtils.dp2px(MyApplication.getInstance().getContext(), 100),
+//                        DensityUtils.dp2px(MyApplication.getInstance().getContext(), 100));
+//                //文件地址
+//                filePath = sdcardUtils.getSDPATH() + FILE_DIR_NAME + "/"
+//                        + FILE_IMG_NAME + "/" + String.format("img_%d.jpg", System.currentTimeMillis());
+//                //保存图片
+//                ImageUtils.save(newBitmap, filePath, Bitmap.CompressFormat.JPEG, true);
+//                //设置值
+//                if (!add) {
+//                    images.set(i, filePath);
+//                } else {//添加图片，要更新
+//                    dragImages.add(addIndex, filePath);
+//                    originImages.add(addIndex++, filePath);
+//                }
             }
             Message message = new Message();
             message.what = 1;

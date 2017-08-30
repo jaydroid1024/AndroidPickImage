@@ -81,7 +81,9 @@ public class AnotherActivity extends AppCompatActivity {
                     sb.append("\n");
                 }
                 mResult.setText(sb.toString());
-                PostImagesActivity.startPostActivity(AnotherActivity.this,mSelectPath);
+                Intent intent = new Intent(AnotherActivity.this, PostImagesActivity.class);
+                intent.putStringArrayListExtra("img", mSelectPath);
+                startActivity(intent);
             }
         }
     }

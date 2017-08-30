@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import org.jay.androidpickimage.helper.PermissionHelper;
-import org.jay.androidpickimage.multi.MultiPickActivity;
+import org.jay.androidpickimage.multi.postimage.PostImagesActivity;
 import org.jay.androidpickimage.single.SinglePickActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,6 +57,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void OnMultiSelect(View view) {
-        startActivity(new Intent(this, MultiPickActivity.class));
+        startActivity(new Intent(this, PostImagesActivity.class));
     }
 }
