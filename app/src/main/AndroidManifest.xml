@@ -52,7 +52,9 @@
         </activity>
         <activity android:name=".multi.MultiPickActivity">
         </activity>
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"/>
+        <activity
+            android:theme="@style/AppThemeBar"
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"/>
         <activity android:name=".multi.multiimageselector.ImgSelActivity"/>
         <activity
             android:name=".multi.multi_image_selector.MultiImageSelectorActivity"

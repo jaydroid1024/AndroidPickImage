@@ -37,15 +37,22 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:clipToPadding="false"/>
-    <ProgressBar
-        android:id="@+id/progress"
-        android:visibility="gone"
+    <RelativeLayout
+
+
         android:layout_alignLeft="@+id/rcv_img"
         android:layout_alignBottom="@+id/rcv_img"
         android:layout_alignRight="@+id/rcv_img"
         android:layout_alignTop="@+id/rcv_img"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+        <ProgressBar
+            android:id="@+id/progress"
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/tv"

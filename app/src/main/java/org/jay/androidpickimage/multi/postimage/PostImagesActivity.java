@@ -192,11 +192,16 @@ public class PostImagesActivity extends AppCompatActivity {
     public void onViewClicked() {
         mProgress.setVisibility(View.VISIBLE);
         String[] images = dragImages.toArray(new String[dragImages.size()]);
+        for (int i = 0; i < originImages.size(); i++) {
+            if (!originImages.get(i).contains(getString(R.string.glide_plus_icon_string))) {
+                images[i] = originImages.get(i);
+            }
+        }
         BmobFile.uploadBatch(images, new UploadBatchListener() {
             @Override
             public void onSuccess(List<BmobFile> list, List<String> list1) {
                 Log.d("jay", "onSuccess: [list, list1]=" + list1.size());
-                if (list1.size() == dragImages.size()) {
+                if (list1.size() == dragImages.size()-1) {
                     ImageModule module = new ImageModule();
                     module.setUrls(list1);
                     module.update(getString(R.string.avatar_id), new UpdateListener() {
