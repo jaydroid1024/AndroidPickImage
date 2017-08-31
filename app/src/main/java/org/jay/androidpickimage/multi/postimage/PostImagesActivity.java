@@ -14,13 +14,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jay.androidpickimage.R;
 import org.jay.androidpickimage.application.MyApplication;
 import org.jay.androidpickimage.helper.PickImageHelper;
+import org.jay.androidpickimage.module.ImageModule;
 import org.jay.androidpickimage.multi.multi_image_selector.MultiImageSelector;
 import org.jay.androidpickimage.multi.multi_image_selector.MultiImageSelectorActivity;
 
@@ -28,42 +33,77 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.QueryListener;
+import cn.bmob.v3.listener.UpdateListener;
+import cn.bmob.v3.listener.UploadBatchListener;
 
 public class PostImagesActivity extends AppCompatActivity {
 
     public static final int IMAGE_SIZE = 9;
     private static final int REQUEST_IMAGE = 1002;
+    @BindView(R.id.btn)
+    Button mBtn;
+    @BindView(R.id.et_content)
+    EditText mEtContent;
+    @BindView(R.id.rcv_img)
+    RecyclerView rcvImg;
+    @BindView(R.id.tv)
+    TextView tv;
+    @BindView(R.id.progress)
+    ProgressBar mProgress;
 
-    private ArrayList<String> originImages;//原始图片
-    private ArrayList<String> dragImages;//压缩长宽后图片
+    private List<String> originImages;//原始图片
+    private List<String> dragImages;//压缩长宽后图片
     private Context mContext;
     private PostArticleImgAdapter postArticleImgAdapter;
     private ItemTouchHelper itemTouchHelper;
-    private RecyclerView rcvImg;
-    private TextView tv;//删除区域提示
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_images);
+        ButterKnife.bind(this);
         initData();
         initView();
+//        getImages();
     }
-
+    private void getImages() {
+        mProgress.setVisibility(View.VISIBLE);
+        BmobQuery<ImageModule> bmobQuery=new BmobQuery<>();
+        bmobQuery.getObject(getString(R.string.avatar_id), new QueryListener<ImageModule>() {
+            @Override
+            public void done(ImageModule imageModule, BmobException e) {
+                mProgress.setVisibility(View.GONE);
+                if(e==null){
+                    Toast.makeText(mContext, ""+imageModule.getUrls().size(), Toast.LENGTH_SHORT).show();
+                }else{
+                    Log.d("jay", "done: [imageModule, e]="+e.toString());
+                }
+            }
+        });
+    }
     private void initData() {
-        originImages = getIntent().getStringArrayListExtra("img");
         if (originImages == null) {
-            originImages=new ArrayList<>();
+            originImages = new ArrayList<>();
         }
         mContext = getApplicationContext();
         //添加按钮图片资源
-        String plusPath = getString(R.string.glide_plus_icon_string) +getPackageInfo(mContext).packageName + "/mipmap/" + R.mipmap.mine_btn_plus;
+        String plusPath = getString(R.string.glide_plus_icon_string) + getPackageInfo(mContext).packageName + "/mipmap/" + R.mipmap.mine_btn_plus;
         dragImages = new ArrayList<>();
         originImages.add(plusPath);//添加按键，超过9张时在adapter中隐藏
         dragImages.addAll(originImages);
-        new Thread(new MyRunnable(this,dragImages, originImages, dragImages, myHandler, false)).start();//开启线程，在新线程中去压缩图片
+        new Thread(new MyRunnable(this, dragImages, originImages, dragImages, myHandler, false)).start();//开启线程，在新线程中去压缩图片
     }
+
     public static PackageInfo getPackageInfo(Context context) {
         PackageManager pm = context.getPackageManager();
         try {
@@ -143,9 +183,47 @@ public class PostImagesActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE && resultCode == RESULT_OK) {//从相册选择完图片
             //压缩图片
-            new Thread(new MyRunnable(PostImagesActivity.this,data.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT),
+            new Thread(new MyRunnable(PostImagesActivity.this, data.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT),
                     originImages, dragImages, myHandler, true)).start();
         }
+    }
+
+    @OnClick(R.id.btn)
+    public void onViewClicked() {
+        mProgress.setVisibility(View.VISIBLE);
+        String[] images = dragImages.toArray(new String[dragImages.size()]);
+        BmobFile.uploadBatch(images, new UploadBatchListener() {
+            @Override
+            public void onSuccess(List<BmobFile> list, List<String> list1) {
+                Log.d("jay", "onSuccess: [list, list1]=" + list1.size());
+                if (list1.size() == dragImages.size()) {
+                    ImageModule module = new ImageModule();
+                    module.setUrls(list1);
+                    module.update(getString(R.string.avatar_id), new UpdateListener() {
+                        @Override
+                        public void done(BmobException e) {
+                            if (e == null) {
+                                mProgress.setVisibility(View.GONE);
+                            }
+                        }
+                    });
+
+                    Toast.makeText(mContext, "success", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onProgress(int i, int i1, int i2, int i3) {
+                Log.d("jay", "onProgress: [i=" + i + ", i1=" + i1 + ", i2=" + i2 + ", i3]=" + i3);
+            }
+
+            @Override
+            public void onError(int i, String s) {
+                Log.d("jay", "onError: [i=" + i + ", s]=" + s);
+
+            }
+        });
     }
 
     /**
@@ -153,14 +231,14 @@ public class PostImagesActivity extends AppCompatActivity {
      */
     static class MyRunnable implements Runnable {
 
-        ArrayList<String> images;
-        ArrayList<String> originImages;
-        ArrayList<String> dragImages;
+        List<String> images;
+        List<String> originImages;
+        List<String> dragImages;
         Handler handler;
         boolean add;//是否为添加图片
         private final Context mContext;
 
-        public MyRunnable(Context context,ArrayList<String> images, ArrayList<String> originImages, ArrayList<String> dragImages, Handler handler, boolean add) {
+        public MyRunnable(Context context, List<String> images, List<String> originImages, List<String> dragImages, Handler handler, boolean add) {
             this.images = images;
             this.originImages = originImages;
             this.dragImages = dragImages;
@@ -193,22 +271,6 @@ public class PostImagesActivity extends AppCompatActivity {
                 } catch (OutOfMemoryError ome) {
                     ome.printStackTrace();
                 }
-//                //压缩
-//                newBitmap = ImageUtils.compressScaleByWH(images.get(i),
-//                        DensityUtils.dp2px(MyApplication.getInstance().getContext(), 100),
-//                        DensityUtils.dp2px(MyApplication.getInstance().getContext(), 100));
-//                //文件地址
-//                filePath = sdcardUtils.getSDPATH() + FILE_DIR_NAME + "/"
-//                        + FILE_IMG_NAME + "/" + String.format("img_%d.jpg", System.currentTimeMillis());
-//                //保存图片
-//                ImageUtils.save(newBitmap, filePath, Bitmap.CompressFormat.JPEG, true);
-//                //设置值
-//                if (!add) {
-//                    images.set(i, filePath);
-//                } else {//添加图片，要更新
-//                    dragImages.add(addIndex, filePath);
-//                    originImages.add(addIndex++, filePath);
-//                }
             }
             Message message = new Message();
             message.what = 1;

@@ -1,5 +1,7 @@
 package org.jay.androidpickimage.module;
 
+import java.util.List;
+
 import cn.bmob.v3.BmobObject;
 
 /**
@@ -8,6 +10,15 @@ import cn.bmob.v3.BmobObject;
 
 public class ImageModule extends BmobObject {
     private String url;
+    private List<String> urls;
+
+    public List<String> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<String> urls) {
+        this.urls = urls;
+    }
 
     public String getUrl() {
         return url;
