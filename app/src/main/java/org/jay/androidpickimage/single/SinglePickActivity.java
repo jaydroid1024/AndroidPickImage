@@ -73,7 +73,7 @@ public class SinglePickActivity extends AppCompatActivity {
                 mIsNeedCrop = isChecked;
             }
         });
-        getAvatar();
+//        getAvatar();
     }
 
     private void getAvatar() {
@@ -91,7 +91,7 @@ public class SinglePickActivity extends AppCompatActivity {
                         }
                     });
                 }else{
-
+                    Log.d("jay", "done: [imageModule, e]="+e.getMessage());
                 }
             }
         });
@@ -106,7 +106,7 @@ public class SinglePickActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            mPbProgress.setVisibility(View.VISIBLE);
+//            mPbProgress.setVisibility(View.VISIBLE);
             Uri imageUri = CropImage.getPickImageResultUri(this, data);
             // For API >= 23 we need to check specifically that we have permissions to read external storage.
             if (CropImage.isReadExternalStoragePermissionsRequired(this, imageUri)) {
@@ -140,7 +140,8 @@ public class SinglePickActivity extends AppCompatActivity {
             File file = PickImageHelper.createFileFromBitmap(this, fileName, thumbNail);
             double size=FileSizeHelper.getFileOrFilesSize(file,FileSizeHelper.SIZETYPE_KB);
             mTvImageSize.setText("size(KB):"+size);
-            uploadProfileImage(file, fileName);
+            mIvAvatar.setImageBitmap(thumbNail);
+//            uploadProfileImage(file, fileName);
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
